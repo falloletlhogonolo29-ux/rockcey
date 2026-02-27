@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Rockcey AI Shopping</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f8;
+margin:0;
+}
+
+header{
+background:#0a2540;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+#searchBox{
+width:90%;
+padding:15px;
+margin:20px;
+font-size:16px;
+}
+
+button{
+padding:12px;
+background:#0070f3;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+#results{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:15px;
+padding:20px;
+}
+
+.product{
+background:white;
+padding:10px;
+border-radius:8px;
+text-align:center;
+}
+
+#dashboard{
+background:white;
+padding:15px;
+margin:20px;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+<h2>Rockcey AI Shopping</h2>
+<p>Type what you want. AI finds it.</p>
+</header>
+
+<center>
+
+<input id="searchBox" placeholder="Example: gaming laptop, nike sneakers, iphone">
+
+<button onclick="aiSearch()">Find Product</button>
+
+</center>
+
+<div id="results"></div>
+
+<div id="dashboard">
+
+<h3>Owner Dashboard</h3>
+
+<p>Total Commission: R<span id="commissionTotal">0</span></p>
+
+<div id="orders"></div>
+
+</div>
+
+<script>
+
+let commissionRate=0.20;
+
+let orders=JSON.parse(localStorage.getItem("rockcey_orders"))||[];
+
+let commissionTotal=parseFloat(localStorage.getItem("rockcey_commission"))||0;
+
+function aiSearch(){
+
+let query=document.getElementById("searchBox").value;
+
+if(!query){
+alert("Type product name");
+return;
+}
+
+let results=[];
+
+for(let i=0;i<6;i++){
+
+let supplierPrice=Math.floor(Math.random()*5000)+500;
+
+let customerPrice=Math.floor(supplierPrice*(1+commissionRate));
+
+results.push({
+
+name:query+" "+(i+1),
+supplierPrice,
+customerPrice,
+commission:customerPrice-supplierPrice,
+image:"https://source.unsplash.com/300x200/?"+query
+
+});
+
+}
+
+displayResults(results);
+
+}
+
+function displayResults(products){
+
+let html="";
+
+products.forEach(p=>{
+
+html+=`
+
+<div class="product">
+
+<img src="${p.image}" width="100%">
+
+<h4>${p.name}</h4>
+
+<p>Price: R${p.customerPrice}</p>
+
+<p style="color:green">Your profit: R${p.commission}</p>
+
+<button onclick='orderProduct("${p.name}",${p.supplierPrice},${p.customerPrice},${p.commission})'>
+
+Order for Customer
+
+</button>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("results").innerHTML=html;
+
+}
+
+function orderProduct(name,supplierPrice,customerPrice,commission){
+
+let customerName=prompt("Customer name:");
+
+let address=prompt("Delivery address:");
+
+if(!customerName||!address){
+alert("Missing info");
+return;
+}
+
+let order={
+
+name,
+supplierPrice,
+customerPrice,
+commission,
+customerName,
+address,
+time:new Date().toLocaleString()
+
+};
+
+orders.push(order);
+
+commissionTotal+=commission;
+
+localStorage.setItem("rockcey_orders",JSON.stringify(orders));
+
+localStorage.setItem("rockcey_commission",commissionTotal);
+
+alert("Order received. Your profit: R"+commission);
+
+displayDashboard();
+
+}
+
+function displayDashboard(){
+
+document.getElementById("commissionTotal").innerText=commissionTotal;
+
+let html="";
+
+orders.forEach(o=>{
+
+html+=`
+
+<div style="border:1px solid gray;padding:10px;margin:10px">
+
+Product: ${o.name}<br>
+
+Customer: ${o.customerName}<br>
+
+Address: ${o.address}<br>
+
+Profit: R${o.commission}<br>
+
+Time: ${o.time}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("orders").innerHTML=html;
+
+}
+
+displayDashboard();
+
+</script>
+
+</body>
+</html>
