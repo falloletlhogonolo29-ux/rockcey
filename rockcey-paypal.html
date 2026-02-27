@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rockcey AI Orders</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #38bdf8;
+}
+
+input, button {
+    padding: 12px;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+input {
+    width: 250px;
+}
+
+button {
+    background: #38bdf8;
+    color: black;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #0ea5e9;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+img {
+    width: 200px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Rockcey AI Order System</h1>
+<p>Enter product name and AI will prepare order</p>
+
+<input type="text" id="productName" placeholder="e.g Nike shoes">
+<br>
+<input type="number" id="customerPrice" placeholder="Customer price (ZAR)">
+<br>
+
+<button onclick="generateOrder()">Generate AI Order</button>
+
+<div id="result"></div>
+
+<div id="payment" style="display:none;">
+<h3>Complete Payment</h3>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+
+<input type="hidden" name="cmd" value="_xclick">
+
+<input type="hidden" name="business" value="falloletlhogonolo29@gmail.com">
+
+<input type="hidden" name="item_name" value="Rockcey AI Order">
+
+<input type="hidden" name="amount" id="paypalAmount" value="1.00">
+
+<input type="hidden" name="currency_code" value="USD">
+
+<input type="hidden" name="return" value="https://falloletlhogonolo29-ux.github.io/rockcey">
+
+<input type="submit" value="Pay Now with PayPal">
+
+</form>
+</div>
+
+<script>
+
+function generateOrder() {
+
+    var product = document.getElementById("productName").value;
+    var price = document.getElementById("customerPrice").value;
+
+    if(product === "" || price === "") {
+        alert("Enter product and price");
+        return;
+    }
+
+    var supplierPrice = price * 0.7;
+    var profit = price - supplierPrice;
+
+    document.getElementById("result").innerHTML = `
+        <div class="card">
+            <h3>${product}</h3>
+            <img src="https://via.placeholder.com/200?text=${product}">
+            <p>Customer price: R${price}</p>
+            <p>Supplier price: R${supplierPrice.toFixed(2)}</p>
+            <p>Your profit: R${profit.toFixed(2)}</p>
+        </div>
+    `;
+
+    var usdAmount = (price / 18).toFixed(2);
+    document.getElementById("paypalAmount").value = usdAmount;
+
+    document.getElementById("payment").style.display = "block";
+
+}
+
+</script>
+
+</body>
+</html>
